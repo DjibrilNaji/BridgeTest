@@ -26,6 +26,7 @@ const pageLimit = 1;
             .set('Client-Secret', 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD')
             .set('Authorization', "Bearer " + access_token)
 
+        // Recupérer l'item
         const objItemBank = resItemBank._body.resources;
 
         // la liste des transactions
@@ -35,24 +36,24 @@ const pageLimit = 1;
             .set('Client-Secret', 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD')
             .set('Authorization', "Bearer " + access_token);
 
+        // Récupérer les transactions
         const objListTransac = resListTransac._body.resources;
-
 
         // Toutes la situation bancaire
         const situation = {};
 
-        // access_token
+        // Ajout de l'access_token dans l'objet situation
         situation["access_token"] = {};
         situation["access_token"]["value"] = access_token;
         situation["access_token"]["expires_at"] = expires_at;
 
-
-        // items
+        // Ajout des items dans l'objet situation
         situation["items"] = objItemBank;
 
-        // Transactions
+        // Ajout des transactions dans l'objet situation
         situation["transactions"] = objListTransac;
 
+        // Récuperer le tableau items et ajouter un tableau accounts
         const itemObj = objItemBank;
         itemObj["accounts"] = [];
 
@@ -66,6 +67,7 @@ const pageLimit = 1;
 
         const objListAccount = resListAccount._body.resources;
 
+        // Création de l'objet account pour ajouter tout les critères que l'on souhaite avoir
         const accountObj = {};
 
         accountObj["id"] = objListAccount[0].id;
@@ -83,9 +85,15 @@ const pageLimit = 1;
 
         // Save File
         var jsonData = JSON.stringify(situation);
+        console.log(situation)
 
-        fs.writeFile("test.json", jsonData);
-
+        fs.writeFile("situation.json", jsonData, "utf8", (err) => {
+            if (err)
+                console.log(err);
+            else {
+                console.log("Fichier enregistrer avec succès\n");
+            }
+        });
     } catch (err) {
         console.error(err);
     }
