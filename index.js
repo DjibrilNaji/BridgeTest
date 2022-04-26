@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import superagent from 'superagent';
 
-const pageLimit = 1;
+const pageLimit = 1 ;
 
 (async () => {
     try {
@@ -57,7 +57,6 @@ const pageLimit = 1;
         const itemObj = objItemBank;
         itemObj["accounts"] = [];
 
-
         // la liste des accounts liés à ces mêmes items ;
         const resListAccount = await superagent.get('https://api.bridgeapi.io/v2/accounts?item_id=' + objItemBank[0].id + '&limit=' + pageLimit)
             .set('Bridge-Version', '2021-06-01')
@@ -65,35 +64,54 @@ const pageLimit = 1;
             .set('Client-Secret', 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD')
             .set('Authorization', "Bearer " + access_token);
 
+        // Récupérer les accounts
         const objListAccount = resListAccount._body.resources;
 
         // Création de l'objet account pour ajouter tout les critères que l'on souhaite avoir
-        const accountObj = {};
+        for (let i = 0; i < pageLimit; i++) {
+            const accountObj = {};
 
-        accountObj["id"] = objListAccount[0].id;
-        accountObj["name"] = objListAccount[0].name;
-        accountObj["balance"] = objListAccount[0].balance;
-        accountObj["status"] = objListAccount[0].status;
-        accountObj["status_code_info"] = objListAccount[0].status_code_info;
-        accountObj["status_code_description"] = objListAccount[0].status_code_description;
-        accountObj["updated_at"] = objListAccount[0].updated_at;
-        accountObj["type"] = objListAccount[0].type;
-        accountObj["currency_code"] = objListAccount[0].currency_code;
-        accountObj["iban"] = objListAccount[0].iban;
+            accountObj["id"] = objListAccount[i].id;
+            accountObj["name"] = objListAccount[i].name;
+            accountObj["balance"] = objListAccount[i].balance;
+            accountObj["status"] = objListAccount[i].status;
+            accountObj["status_code_info"] = objListAccount[i].status_code_info;
+            accountObj["status_code_description"] = objListAccount[i].status_code_description;
+            accountObj["updated_at"] = objListAccount[i].updated_at;
+            accountObj["type"] = objListAccount[i].type;
+            accountObj["currency_code"] = objListAccount[i].currency_code;
+            accountObj["iban"] = objListAccount[i].iban;
 
-        itemObj["accounts"] = accountObj;
+            itemObj["accounts"][i] = accountObj;
+            // itemObj["accounts"].push(accountObj);
+        }
 
-        // Save File
+        console.log(situation["items"])
+
+        console.log(situation)
+
+
+// Save File
         var jsonData = JSON.stringify(situation);
         console.log(situation)
 
-        fs.writeFile("situation.json", jsonData, "utf8", (err) => {
+        fs.writeFile("situation.txt", jsonData, "utf8", (err) => {
             if (err)
                 console.log(err);
             else {
                 console.log("Fichier enregistrer avec succès\n");
             }
         });
+
+// Lire le fichier
+        fs.readFile("situation.txt", "utf8", (err, data) => {
+            if (err) {
+                console.log(err);
+            } else {
+                return console.log(data);
+            }
+        });
+
     } catch (err) {
         console.error(err);
     }
