@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import superagent from 'superagent';
 
-const pageLimit = 3 ;
+const pageLimit = 3;
 
 (async () => {
     try {
@@ -82,18 +82,17 @@ const pageLimit = 3 ;
             accountObj["currency_code"] = objListAccount[i].currency_code;
             accountObj["iban"] = objListAccount[i].iban;
 
-            // itemObj["accounts"][i] = accountObj;
-            itemObj["accounts"].push(accountObj);
+            itemObj["accounts"][i] = accountObj;
+            // itemObj["accounts"].push(accountObj);
         }
 
         console.log(situation["items"])
-
         console.log(situation)
 
 // Save File
-        var jsonData = JSON.stringify(situation,  null, 4);
+        var jsonData = JSON.stringify(situation, null, 4);
 
-        fs.writeFile("situation.txt", jsonData,(err) => {
+        fs.writeFile("situation.txt", jsonData, (err) => {
             if (err)
                 console.log(err);
             else {
@@ -101,14 +100,14 @@ const pageLimit = 3 ;
             }
         });
 
-// Lire le fichier
-//         fs.readFile("situation.txt", "utf8", (err, data) => {
-//             if (err) {
-//                 console.log(err);
-//             } else {
-//                 return console.log(data);
-//             }
-//         });
+        // Lire le fichier
+        fs.readFile("situation.txt", "utf8", (err, data) => {
+            if (err) {
+                console.log(err);
+            } else {
+                return console.log(data);
+            }
+        });
 
     } catch (err) {
         console.error(err);
