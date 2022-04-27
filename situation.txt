@@ -1,1 +1,59 @@
-{"access_token":{"value":"eaf1e8ab565fbb04654bbd71bd904a190c980be3-9bd167cf-f765-4058-b3eb-a69a85fce512","expires_at":"2022-04-27T01:51:49.556Z"},"items":[{"id":6648847,"status":0,"status_code_info":null,"status_code_description":null,"bank_id":408}],"transactions":[{"id":38000784535997,"clean_description":"Achat De Titres","bank_description":"ACHAT DE TITRES - 260422","amount":-1693,"date":"2022-04-26","updated_at":"2022-04-22T14:53:00.048Z","currency_code":"EUR","is_deleted":false,"category_id":85,"account_id":30179393,"is_future":true,"show_client_side":true}]}
+{
+    "access_token": {
+        "value": "e2104387d965432848502873a26940a6d0d95a94-62f69479-61d9-4019-9295-a73c502a155a",
+        "expires_at": "2022-04-27T13:29:28.857Z"
+    },
+    "items": [
+        {
+            "id": 6648847,
+            "status": 0,
+            "status_code_info": null,
+            "status_code_description": null,
+            "bank_id": 408
+        }
+    ],
+    "transactions": [
+        {
+            "id": 38000784535997,
+            "clean_description": "Achat De Titres",
+            "bank_description": "ACHAT DE TITRES - 260422",
+            "amount": -1693,
+            "date": "2022-04-26",
+            "updated_at": "2022-04-22T14:53:00.048Z",
+            "currency_code": "EUR",
+            "is_deleted": false,
+            "category_id": 85,
+            "account_id": 30179393,
+            "is_future": true,
+            "show_client_side": true
+        },
+        {
+            "id": 38000784535885,
+            "clean_description": "Retraite",
+            "bank_description": "Retraite - 260422",
+            "amount": 1733,
+            "date": "2022-04-26",
+            "updated_at": "2022-04-22T14:52:58.930Z",
+            "currency_code": "EUR",
+            "is_deleted": false,
+            "category_id": 279,
+            "account_id": 30179391,
+            "is_future": true,
+            "show_client_side": true
+        },
+        {
+            "id": 38000784535884,
+            "clean_description": "Impôts Taxes Autres",
+            "bank_description": "Impôts & Taxes - Autres - 260422",
+            "amount": -1815,
+            "date": "2022-04-26",
+            "updated_at": "2022-04-22T14:52:58.921Z",
+            "currency_code": "EUR",
+            "is_deleted": false,
+            "category_id": 264,
+            "account_id": 30179391,
+            "is_future": true,
+            "show_client_side": true
+        }
+    ]
+}
