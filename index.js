@@ -1,98 +1,104 @@
 import * as fs from 'fs';
 import superagent from 'superagent';
 
-const pageLimit = 3;
+const pageLimit = 2;
+
+async function getToken() {
+    return superagent.post('https://api.bridgeapi.io/v2/authenticate')
+        .set('Bridge-Version', '2021-06-01')
+        .set('Content-Type', 'application/json')
+        .set('Client-Id', '945a08c761804ac1983536463fc4a7f6')
+        .set('Client-Secret', 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD')
+        .send({email: 'john.doe@email.com', password: 'password123'});
+}
+
+async function getItem(headers) {
+    return superagent.get('https://api.bridgeapi.io/v2/items')
+        .set({...headers});
+
+}
+
+async function getAccount(headers, item_id) {
+    return superagent.get('https://api.bridgeapi.io/v2/accounts?item_id=' + item_id )
+        .set({...headers});
+
+}
+
+async function getTransaction(headers) {
+    return superagent.get('https://api.bridgeapi.io/v2/transactions?limit=' + pageLimit)
+        .set({...headers});
+}
+
 
 (async () => {
     try {
-        //  Authentification
-        const resAuthent = await superagent.post('https://api.bridgeapi.io/v2/authenticate')
-            .set('Bridge-Version', '2021-06-01')
-            .set('Content-Type', 'application/json')
-            .set('Client-Id', '945a08c761804ac1983536463fc4a7f6')
-            .set('Client-Secret', 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD')
-            .send({email: 'john.doe@email.com', password: 'password123'});
+        // Get Token
+        const token = await getToken();
+        const {
+            _body: {
+                access_token,
+                expires_at
+            }
+        } = token;
 
+        // Headers
+        const bridgeVersion = '2021-06-01';
+        const clientId = '945a08c761804ac1983536463fc4a7f6';
+        const clientSecret = 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD';
+        const authorization = "Bearer " + access_token;
 
-        // Recupérer le token
-        const access_token = resAuthent._body.access_token;
-        const expires_at = resAuthent._body.expires_at;
-
-
-        // la liste des items bancaires avec leurs détails ;
-        const resItemBank = await superagent.get('https://api.bridgeapi.io/v2/items?limit=' + pageLimit)
-            .set('Bridge-Version', '2021-06-01')
-            .set('Client-Id', '945a08c761804ac1983536463fc4a7f6')
-            .set('Client-Secret', 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD')
-            .set('Authorization', "Bearer " + access_token)
-
-        // Recupérer l'item
-        const objItemBank = resItemBank._body.resources;
-
-        // la liste des transactions
-        const resListTransac = await superagent.get('https://api.bridgeapi.io/v2/transactions?limit=' + pageLimit)
-            .set('Bridge-Version', '2021-06-01')
-            .set('Client-Id', '945a08c761804ac1983536463fc4a7f6')
-            .set('Client-Secret', 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD')
-            .set('Authorization', "Bearer " + access_token);
-
-        // Récupérer les transactions
-        const objListTransac = resListTransac._body.resources;
-
-        // Toutes la situation bancaire
-        const situation = {};
-
-        // Ajout de l'access_token dans l'objet situation
-        situation["access_token"] = {};
-        situation["access_token"]["value"] = access_token;
-        situation["access_token"]["expires_at"] = expires_at;
-
-        // Ajout des items dans l'objet situation
-        situation["items"] = objItemBank;
-
-        // Ajout des transactions dans l'objet situation
-        situation["transactions"] = objListTransac;
-
-        // Récuperer le tableau items et ajouter un tableau accounts
-        const itemObj = objItemBank;
-        itemObj["accounts"] = [];
-
-        // la liste des accounts liés à ces mêmes items ;
-        const resListAccount = await superagent.get('https://api.bridgeapi.io/v2/accounts?item_id=' + objItemBank[0].id + '&limit=' + pageLimit)
-            .set('Bridge-Version', '2021-06-01')
-            .set('Client-Id', '945a08c761804ac1983536463fc4a7f6')
-            .set('Client-Secret', 'YqUINh5B5pYlp7UzlENutajikoDX1gIW4pNObUCn9sEXLXGm39Mm1Yq8JKUFaHUD')
-            .set('Authorization', "Bearer " + access_token);
-
-        // Récupérer les accounts
-        const objListAccount = resListAccount._body.resources;
-
-        // Création de l'objet account pour ajouter tout les critères que l'on souhaite avoir
-        for (let i = 0; i < pageLimit; i++) {
-            const accountObj = {};
-
-            accountObj["id"] = objListAccount[i].id;
-            accountObj["name"] = objListAccount[i].name;
-            accountObj["balance"] = objListAccount[i].balance;
-            accountObj["status"] = objListAccount[i].status;
-            accountObj["status_code_info"] = objListAccount[i].status_code_info;
-            accountObj["status_code_description"] = objListAccount[i].status_code_description;
-            accountObj["updated_at"] = objListAccount[i].updated_at;
-            accountObj["type"] = objListAccount[i].type;
-            accountObj["currency_code"] = objListAccount[i].currency_code;
-            accountObj["iban"] = objListAccount[i].iban;
-
-            itemObj["accounts"][i] = accountObj;
-            // itemObj["accounts"].push(accountObj);
+        const headers = {
+            'Bridge-Version': bridgeVersion,
+            'Client-Id': clientId,
+            'Client-Secret': clientSecret,
+            'Authorization': authorization
         }
 
-        console.log(situation["items"])
-        console.log(situation)
+        // Get Item
+        const resItem = await getItem(headers);
+        const objItemBank = resItem._body.resources;
 
-// Save File
-        var jsonData = JSON.stringify(situation, null, 4);
+        // Get Transactions
+        const resListTransac = await getTransaction(headers);
+        const objListTransac = resListTransac._body.resources;
 
-        fs.writeFile("situation.txt", jsonData, (err) => {
+        // Get Accounts
+        const resListAccount = await getAccount(headers, objItemBank[0].id);
+        const objListAccount = resListAccount._body.resources;
+
+        const accounts = [];
+
+        // Banking status Object
+        const situation = {
+            access_token: {
+                value: access_token,
+                expires_at: expires_at,
+            },
+            items: objItemBank, accounts,
+            transactions: objListTransac
+        };
+
+        // Object List Account
+        for (let i = 0; i < pageLimit; i++) {
+            const accountObj = {
+                id: objListAccount[i].id,
+                name: objListAccount[i].name,
+                balance: objListAccount[i].balance,
+                status: objListAccount[i].status,
+                status_code_info: objListAccount[i].status_code_info,
+                status_code_description: objListAccount[i].status_code_description,
+                updated_at: objListAccount[i].updated_at,
+                type: objListAccount[i].type,
+                currency_code: objListAccount[i].currency_code,
+                iban: objListAccount[i].iban
+            };
+            accounts.push(accountObj)
+        }
+
+        // Save File
+        var jsonData = JSON.stringify(situation, undefined, 4);
+
+        fs.writeFile("situation.json", jsonData, (err) => {
             if (err)
                 console.log(err);
             else {
@@ -101,7 +107,7 @@ const pageLimit = 3;
         });
 
         // Lire le fichier
-        fs.readFile("situation.txt", "utf8", (err, data) => {
+        fs.readFile("situation.json", "utf8", (err, data) => {
             if (err) {
                 console.log(err);
             } else {
